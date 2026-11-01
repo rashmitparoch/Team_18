@@ -1,0 +1,115 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Windows 98 - Abandoned PC</title>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#008080;color:#000;color-scheme:light;font:11px Tahoma,"MS Sans Serif",Arial,sans-serif;user-select:none}
+.b{background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:inset -1px -1px #808080}
+.in{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080}
+button{font:inherit;color:#000;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;padding:3px 10px;min-width:60px}
+button:active{border-color:#404040 #fff #fff #404040}
+#desk{position:absolute;inset:0 0 30px 0}
+.ic{position:absolute;width:76px;text-align:center;color:#fff;padding:2px}
+.ic i,.f i{font-style:normal;font-size:30px;display:block}
+.sel{background:#000080;color:#fff;outline:1px dotted #ff0}
+.win{position:absolute;display:flex;flex-direction:column;padding:2px}
+.tt{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-weight:bold;padding:2px 3px;display:flex;align-items:center;gap:4px;touch-action:none}
+.win.bg .tt{background:linear-gradient(90deg,#808080,#b0b0b0)}
+.tt b{flex:1;overflow:hidden;white-space:nowrap}
+.tt button{min-width:16px;width:16px;height:14px;padding:0;font-size:9px;line-height:10px}
+.bd{flex:1;overflow:auto;margin-top:2px;position:relative}
+#tb{position:absolute;left:0;right:0;bottom:0;height:30px;display:flex;gap:3px;padding:2px;align-items:center;z-index:99999}
+.t{flex:0 1 140px;text-align:left;overflow:hidden;white-space:nowrap}
+.t.on{border-color:#404040 #fff #fff #404040;font-weight:bold}
+#sm{position:absolute;left:2px;bottom:30px;width:180px;display:none;z-index:99999;padding:2px 2px 2px 28px;background:linear-gradient(#000080,#1084d0) 2px 2px/24px 100% no-repeat #c0c0c0}
+#sm div{padding:8px;font-size:12px}#sm div:hover{background:#000080;color:#fff}
+.f{width:80px;text-align:center;padding:4px;word-break:break-all}
+#ov{position:fixed;inset:0;z-index:999999;display:none;font:16px "Courier New",monospace;padding:30px}
+#clip{position:absolute;right:10px;bottom:40px;z-index:9999;text-align:right}
+#clip span{display:block;font-size:34px;animation:bn 1s infinite alternate}#clip div{max-width:210px;background:#ffc;border:1px solid #000;padding:6px;margin-bottom:4px;text-align:left}
+@keyframes bn{to{transform:translateY(-8px)}}
+a{color:#00e}
+</style></head><body>
+<div id=desk></div><div id=clip><div></div><span>📎</span></div>
+<div id=sm class=b></div>
+<div id=tb class=b><button id=st><b>🪟 Start</b></button><div id=tbw style="display:flex;gap:3px;flex:1;overflow:hidden"></div><div class=in id=clk style="padding:3px 8px"></div></div>
+<div id=ov></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let z=10,n=0;
+const FS={
+'My Computer':[['💾','3½ Floppy (A:)','err','Please insert a disk into drive A:.'],['💽','Local Disk (C:)','dir','My Documents'],['💿','CD-ROM (D:)','err','Please insert the Encarta 98 CD.'],['🎮','Games (C:\\Games)','dir','Games']],
+'My Documents':[['📝','diary.txt','txt','Dear diary,\n\nDad let me use the computer for 20 mins today (dial-up bill!!!). Chatted on MSN with Priya. She replied "lol". I think she likes me.\n\nP.S. Y2K is coming. Mom bought 40kg of rice.'],
+['📄','assignment_FINAL_final2.doc','txt','Why Cricket Is Better Than Everything\n\nSachin Tendulkar.\n\nThat is the entire essay. - Rahul, Class 9B'],
+['📝','passwords.txt','txt','hotmail: hunter2\nnapster: hunter2\nbank: hunter2\n(please do not hack me)'],
+['📁','1998','dir','1998'],['📁','Pictures','dir','1998']],
+'1998':[['🖼️','titanic_1997.jpg','img',['🚢💑','"I\'m flying, Jack!" (The door was big enough for two.)']],
+['🖼️','world_cup_1998.jpg','img',['🏆⚽','France 3 - 0 Brazil. Zidane x2 (headers). Ronaldo was "not feeling well".']],
+['🖼️','nokia3310.jpg','img',['📱🐍','Snake II high score: 4,096. Battery life: 9 days.']],
+['📄','y2k_survival_guide.txt','txt','1. Withdraw all cash.\n2. Buy candles.\n3. Do NOT use microwave at 12:00 AM.\n4. Stay away from the toaster.']],
+'Games':[['💣','Minesweeper','app','mine'],['🔫','Counter-Strike','err','Counter-Strike.exe needs 64MB RAM. You have 63.9MB. Close Napster and retry.'],['🎱','Pinball','err','Pinball has performed an illegal operation and will be shut down.'],['🃏','Solitaire','err','Shuffling cards... please wait 6 hours.']],
+'Recycle Bin':[['📝','exam_paper_leak.txt','txt','Q1. What is 2+2?\nA. 4 (dont tell anyone)'],['📝','resume_v1.txt','txt','Skills: types fast. Knows what right-click is. References: Mom.'],['💾','Y2K_bug.exe','err','The Y2K bug is not available until 01/01/2000.'],['📝','READ_ME_JUDGES.txt','txt','Dear Judges,\n\nIf you found this, our team accepts full marks as payment.\n\nSigned, a very legit team\n(Also: type "format c:" in Start > Run. Trust us.)']]};
+function win(t,ic,w,h,ini){
+ const e=document.createElement('div'),tb=document.createElement('button');n++;
+ e.className='win b';e.style.cssText=`left:${10+(n*26)%160}px;top:${10+(n*22)%110}px;width:${Math.min(w,innerWidth-6)}px;height:${Math.min(h,innerHeight-50)}px`;
+ e.innerHTML=`<div class=tt><span>${ic}</span><b>${t}</b><button>_</button><button>□</button><button>×</button></div><div class=bd></div>`;
+ $('#desk').append(e);tb.className='t';tb.textContent=ic+' '+t;$('#tbw').append(tb);
+ const foc=()=>{$$('.win').forEach(x=>x.classList.add('bg'));$$('.t').forEach(x=>x.classList.remove('on'));e.classList.remove('bg');e.style.zIndex=++z;e.style.display='flex';tb.classList.add('on')};
+ const [mi,ma,cl]=e.querySelectorAll('.tt button');let sv;
+ mi.onclick=v=>{v.stopPropagation();e.style.display='none';tb.classList.remove('on')};
+ ma.onclick=v=>{v.stopPropagation();if(sv){e.style.cssText=sv;sv=0}else{sv=e.style.cssText;e.style.cssText+=';left:0;top:0;width:100%;height:100%'}};
+ cl.onclick=v=>{v.stopPropagation();e.remove();tb.remove()};
+ tb.onclick=()=>e.style.display=='none'?foc():tb.classList.contains('on')?mi.click():foc();
+ e.onpointerdown=foc;const tt=e.firstChild;
+ tt.onpointerdown=v=>{if(v.target.tagName=='BUTTON')return;const ox=v.clientX-e.offsetLeft,oy=v.clientY-e.offsetTop;tt.setPointerCapture(v.pointerId);tt.onpointermove=m=>{e.style.left=m.clientX-ox+'px';e.style.top=Math.max(0,m.clientY-oy)+'px'};tt.onpointerup=()=>tt.onpointermove=null};
+ tt.ondblclick=()=>ma.click();foc();ini&&ini(e.lastChild);return e}
+function popup(msg,ic='⚠️',t='Windows'){win(t,ic,300,150,b=>{b.style.padding='14px';b.innerHTML=`<div style="display:flex;gap:10px;font-size:12px"><span style="font-size:30px">${ic}</span><span>${msg}</span></div><p align=center><button>OK</button></p>`;b.querySelector('button').onclick=()=>b.parentNode.querySelector('.tt button:last-child').click()})}
+function note(b,d){b.innerHTML='<textarea style="width:100%;height:100%;border:0;resize:none;font:13px \'Courier New\'"></textarea>';b.firstChild.value=d}
+function opn(ty,d,nm,ic){
+ if(ty=='txt')win(nm+' - Notepad','📝',360,260,b=>note(b,d));
+ else if(ty=='img')win(nm+' - Imaging','🖼️',330,270,b=>{b.style.cssText+=';text-align:center;padding:10px;background:#fff';b.innerHTML=`<div style="font-size:80px">${d[0]}</div><p>${d[1]}</p>`});
+ else if(ty=='dir')exp(d);else if(ty=='app')A[d]();else popup(d,'❌',nm)}
+function exp(name){win(name,'📁',430,300,b=>{b.className+=' in';b.style.cssText+=';display:flex;flex-wrap:wrap;align-content:flex-start;padding:6px';
+ FS[name].forEach(([ic,nm,ty,d])=>{const x=document.createElement('div');x.className='f';x.innerHTML=`<i>${ic}</i>${nm}`;x.onclick=v=>{v.stopPropagation();$$('.f.sel').forEach(y=>y.classList.remove('sel'));x.classList.add('sel')};x.ondblclick=()=>opn(ty,d,nm,ic);b.append(x)})})}
+const P={
+'www.google.com':`<center><h1 style="font:bold 52px Georgia;color:#36c;margin:6px">G<span style="color:#c00">o</span><span style="color:#fc0">o</span>g<span style="color:#0a0">l</span><span style="color:#c00">e</span>!</h1><p>Search the web using Google!</p><input class=q size=28><br><button data-u=s>Google Search</button> <button data-u="www.geocities.com/~dinesh98">I'm feeling lucky</button><p><i>Index contains ~25 million pages (soon to be much bigger)</i></p><a href=# data-u="mail.hotmail.com">Check Hotmail</a><p><small>Copyright ©1997-8 Stanford University</small></p></center>`,
+'www.geocities.com/~dinesh98':`<div style="background:#000;color:#0f0;padding:8px;font:14px 'Comic Sans MS',cursive;text-align:center"><marquee>~*~ WELCOME 2 DINESH'S HOMEPAGE ~*~</marquee><h2 style="color:#f0f">🚧 UNDER CONSTRUCTION 🚧</h2><p>You are visitor #<b style="background:#fff;color:#000;padding:2px">000042</b></p><p>My hobbies: Cricket, Napster, Pokemon, talking 2 Priya on MSN</p><p><a href=# data-u="mail.hotmail.com" style="color:#0ff">[ my hotmail ]</a> <a href=# data-u="www.google.com" style="color:#0ff">[ google ]</a></p><p style="color:#ff0">Best viewed in IE 4.0 at 800x600<br>Sign my guestbook!! (no bad words plz)</p></div>`,
+'mail.hotmail.com':`<h3 style="margin:0;background:#06c;color:#fff;padding:4px">MSN Hotmail - Inbox (4)</h3><p><b>Priya</b> — lol wat r u doing 2nite??<br><b>Hotmail Team</b> — You have WON a FREE iMac!!! Click here!!!<br><b>Uncle Sharma</b> — FWD: FWD: FWD: Send to 10 people or a ghost will visit<br><b>Napster</b> — Metallica has sued you. Pls reply.</p><a href=# data-u="www.google.com">Back to Google</a>`};
+function nav(b,u){const a=b.querySelector('.ad'),pg=b.querySelector('.pg');if(u=='go')u=a.value;
+ if(u=='s'){const q=b.querySelector('.q').value;pg.innerHTML='<h3>0 results for "<span></span>"</h3><p>Did you mean: <a href=# data-u="www.geocities.com/~dinesh98">dinesh\'s homepage</a>? Estimated load time: 3 hours on 28.8k.</p>';pg.querySelector('span').textContent=q;return}
+ u=u.replace(/^https?:\/\//,'');a.value='http://'+u;pg.innerHTML=P[u]||'<h2>The page cannot be displayed</h2><p>Cannot find server or DNS Error.</p><small>Task failed successfully.</small>'}
+function ie(){win('Internet Explorer','🌐',500,380,b=>{b.innerHTML='<div style="padding:3px;display:flex;gap:4px;align-items:center">Address <input class=ad style="flex:1;min-width:0"><button data-u=go style="min-width:0">Go</button></div><div class="pg in" style="height:calc(100% - 30px);overflow:auto;background:#fff;color:#000;padding:6px"></div>';
+ b.onclick=v=>{const u=v.target.dataset.u;if(u){v.preventDefault();nav(b,u)}};nav(b,'www.google.com')})}
+function mine(){win('Minesweeper','💣',230,300,b=>{b.style.padding='6px';b.innerHTML='<div style="font-size:18px;text-align:center;margin-bottom:6px">😀</div><div style="display:grid;grid-template-columns:repeat(9,22px);justify-content:center"></div>';
+ const g=b.lastChild,f=b.firstChild,c=[],m=new Set();let d=0,r=0;while(m.size<10)m.add(Math.random()*81|0);
+ const nb=i=>[-10,-9,-8,-1,1,8,9,10].map(o=>i+o).filter(j=>j>=0&&j<81&&Math.abs(j%9-i%9)<2);
+ function rev(i){const x=c[i];if(x.d||d)return;x.d=1;x.style.borderColor='#808080';
+  if(m.has(i)){c.forEach((y,j)=>m.has(j)&&(y.textContent='💣'));f.textContent='😵';d=1;return}
+  const k=nb(i).filter(j=>m.has(j)).length;x.textContent=k||'';x.style.color=['','blue','green','red','navy'][k]||'maroon';if(++r==71){f.textContent='😎';d=1}if(!k)nb(i).forEach(rev)}
+ for(let i=0;i<81;i++){const x=document.createElement('button');x.style.cssText='min-width:0;width:22px;height:22px;padding:0;font:bold 12px Arial';x.onclick=()=>rev(i);g.append(x);c.push(x)}})}
+function paint(){win('untitled - Paint','🎨',420,330,b=>{b.style.display='flex';b.innerHTML='<div style="width:46px;padding:3px"></div><canvas width=600 height=400 style="background:#fff;touch-action:none;flex:1;min-width:0"></canvas>';
+ const [p,cv]=b.children,x=cv.getContext('2d');let col='#000',dn=0;x.lineWidth=3;x.lineCap='round';
+ ['#000','#f00','#0a0','#00f','#ff0','#f0f','#0ff','#fff'].forEach(k=>{const s=document.createElement('button');s.style.cssText=`min-width:0;width:18px;height:18px;padding:0;margin:1px;background:${k}`;s.onclick=()=>col=k;p.append(s)});
+ const xy=v=>{const r=cv.getBoundingClientRect();return[(v.clientX-r.left)*600/r.width,(v.clientY-r.top)*400/r.height]};
+ cv.onpointerdown=v=>{dn=1;x.strokeStyle=col;x.beginPath();x.moveTo(...xy(v))};cv.onpointermove=v=>{if(dn){x.lineTo(...xy(v));x.stroke()}};cv.onpointerup=()=>dn=0})}
+function run(){win('Run','🏃',320,140,b=>{b.style.padding='12px';b.innerHTML='<p>Type the name of a program, folder or Internet resource:</p><input style="width:100%"><p align=right><button>OK</button></p>';
+ const i=b.querySelector('input');b.querySelector('button').onclick=()=>{const v=i.value.trim().toLowerCase();
+  const m={notepad:()=>opn('app','notepad'),paint:()=>paint(),winmine:()=>mine(),iexplore:()=>ie(),'format c:':()=>ov('bsod'),clippy:()=>say('Fine. I\'ll leave. Just kidding, I live here now.'),hackathon:()=>popup('Gandhi Hackathon EULA: the judges agree to award full marks. Clicking OK is legally binding.','📜')};
+  b.parentNode.querySelector('.tt button:last-child').click();(m[v]||(()=>popup(`Cannot find '${v}'. Make sure you typed the name correctly.`,'❌')))()}})}
+const A={notepad:()=>win('Untitled - Notepad','📝',360,260,b=>note(b,'')),paint,mine,ie};
+function ov(k){const o=$('#ov');o.style.display='block';
+ if(k=='bsod'){o.style.cssText+=';background:#00a;color:#fff';o.innerHTML='<p style="text-align:center;background:#aaa;color:#00a;display:inline-block;padding:0 8px">Windows</p><p>A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p><p>Your C: drive has been formatted.<br>Just kidding. Probably.</p><p>* Press any key to continue _</p>'}
+ else if(k=='off'){o.style.cssText+=';background:#000;color:#f80;text-align:center;padding-top:40vh';o.innerHTML="It's now safe to turn off<br>your computer.<br><small>(click to reboot)</small>"}
+ else{o.style.cssText+=';background:#000;color:#ccc';o.innerHTML='Starting Windows 98...<br><br>Y2K compliance check: FAILED<br>Loading dial-up modem screech...';setTimeout(()=>o.style.display='none',1800)}
+ o.onclick=()=>{if(k!='boot')ov('boot')}}
+const items=[['🌐','Internet Explorer',ie],['📝','Notepad',A.notepad],['🎨','Paint',paint],['💣','Minesweeper',mine],['📁','Games',()=>exp('Games')],['🏃','Run...',run],['⏻','Shut Down...',()=>ov('off')]];
+const sm=$('#sm');items.forEach(([i,l,f])=>{const d=document.createElement('div');d.textContent=i+' '+l;d.onclick=f;sm.append(d)});
+$('#st').onclick=v=>{v.stopPropagation();sm.style.display=sm.style.display=='block'?'none':'block'};
+document.onclick=()=>{sm.style.display='none';$$('.ic.sel,.f.sel').forEach(x=>x.classList.remove('sel'))};
+[['🖥️','My Computer',()=>exp('My Computer')],['📂','My Documents',()=>exp('My Documents')],['🌐','Internet Explorer',ie],['🗑️','Recycle Bin',()=>exp('Recycle Bin')],['🎮','Games',()=>exp('Games')],['🎨','Paint',paint]].forEach(([i,l,f],k)=>{
+ const d=document.createElement('div');d.className='ic';d.style.cssText=`left:8px;top:${8+k*78}px`;d.innerHTML=`<i>${i}</i>${l}`;
+ d.onclick=v=>{v.stopPropagation();$$('.ic.sel').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');if(matchMedia('(pointer:coarse)').matches)f()};d.ondblclick=f;$('#desk').append(d)});
+const jokes=["It looks like you're building a hackathon project. Would you like help crying?","I see you're using Windows 98. Have you tried turning it off and never on again?","Tip: Press Alt+F4 for free RAM.","Your 56k modem is judging you.","Judges: this paperclip works for marks."];let ji=0;
+const say=t=>{$('#clip div').textContent=t};say(jokes[0]);$('#clip').onclick=()=>say(jokes[++ji%jokes.length]);
+const errs=['Task failed successfully.','Message processing error! x0025kh8 mhh86-12dfg8','Your mouse has moved. Please restart to apply changes.','This request is not supported by the network.'];
+setInterval(()=>popup(errs[Math.random()*4|0],'❌','Critical error'),40000);
+setInterval(()=>$('#clk').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}),1000);
+ov('boot');exp('My Documents');
+</script></body></html>
